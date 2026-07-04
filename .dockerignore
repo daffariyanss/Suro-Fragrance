@@ -1,0 +1,11 @@
+build
+docs
+tests
+vendor
+writable/session
+writable/cache
+writable/logs
+.git
+.gitignore
+README.md
+env
