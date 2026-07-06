@@ -9,8 +9,8 @@ FROM php:8.2-apache
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
-RUN a2dismod mpm_event || true \
-    && a2enmod mpm_prefork rewrite headers \
+RUN a2dismod mpm_event mpm_worker || true \
+    && a2enmod rewrite headers \
     && apt-get update \
     && apt-get install -y --no-install-recommends libicu-dev \
     && docker-php-ext-install intl mysqli pdo pdo_mysql \
