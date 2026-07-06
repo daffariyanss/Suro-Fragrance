@@ -1,5 +1,7 @@
 FROM composer:2 AS vendor
 WORKDIR /app
+RUN apk add --no-cache icu-dev \
+    && docker-php-ext-install intl
 COPY composer.json composer.lock* ./
 RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader
 
@@ -8,9 +10,12 @@ FROM php:8.2-apache
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN a2enmod rewrite headers \
-    && docker-php-ext-install mysqli pdo pdo_mysql
+    && apt-get update && apt-get install -y libicu-dev \
+    && docker-php-ext-install intl mysqli pdo pdo_mysql \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/ports.conf /etc/apache2/ports.conf
 
 WORKDIR /var/www/html
 
@@ -20,4 +25,4 @@ COPY . .
 RUN chown -R www-data:www-data writable \
     && chmod -R 775 writable
 
-EXPOSE 80
+EXPOSE ${PORT:-80}
